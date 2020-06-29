@@ -1,66 +1,89 @@
+// Importing React
 import React from 'react';
 
-import {useLocation} from 'react-router-dom'
+// Importing withRouter super Component from react-router to be able to get location and match functionality
+import {withRouter} from 'react-router-dom'
 
+// Importing Component used
 import GalleryItem from './Gallery-item'
+
+// Importing API key
 import apiKey from '../config'
 
+// Fetch function
+function fetchInfo(searchTerm, changeState) {
 
+    console.log(searchTerm, changeState)
+    fetch(`https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=${apiKey}&tags=${searchTerm}&per_page=24&format=json&nojsoncallback=1`)
+
+    // Converting the JSON into JS
+    .then(res => res.json())
+
+    // Selecting only the photo metadata
+    .then(res => res.photos.photo)
+
+    // Changing the data state in the App component
+    .then( res => {
+            changeState(res)
+        } 
+    )
+}
+    
+
+// The Gallery Component --> Class
 class Gallery extends React.Component {
     
+    // The function called when the Component is first mounted
     componentDidMount() {
-        console.log('mounted')
-        fetch(`https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=${apiKey}&tags=${this.props.path}&per_page=24&format=json&nojsoncallback=1`)
-        .then(res => res.json())
-        .then((res) => {console.log(res.photos.photo[0].title)
-            return res.photos.photo;
-        })
-        .then( res => {
-        
-        this.props.changeState(res, this.props.path)
-            } 
-        )
+
+        // Calling functions to Fetch
+        fetchInfo(this.props.match.params.searches, this.props.changeState)
     }
 
+    // The function called when the Component is updated
     componentDidUpdate(prevProps) {
-        if (this.props.path !== prevProps.path) {
-            console.log('refreshed')
-            fetch(`https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=${apiKey}&tags=${this.props.path}&per_page=24&format=json&nojsoncallback=1`)
-            .then(res => res.json())
-            .then((res) => {console.log(res.photos.photo[0].title)
-                return res.photos.photo;
-            })
-            .then( res => {
-            this.props.changeState(res, this.props.path)
-            } 
-            )
+
+        // Checking if the state changed value
+        if (this.props.match.params.searches !== prevProps.match.params.searches) {
+
+            // Calling functions to Fetch
+            fetchInfo(this.props.match.params.searches, this.props.changeState)
         }
     }
     
+    // Render function used in react to put rendering logic
     render() {
+
+        // Setting an array that holds all the created GalleryItem Components
+        let arrayOfItems = [];
+        if (this.props.data) {      
+            for (let i=0; i<this.props.data.length; i++) {
+                arrayOfItems.push(<GalleryItem data={this.props.data[i]} alt={this.props.match.params.searches} key={i+1} />) 
+            }
+        }
+        
+        // Returning the JSX to render
         return (
             <div className="photo-container">
-                <h2>{this.props.path}</h2>
+                <h2>{this.props.match.params.searches}</h2>
                 <ul>
-                    <GalleryItem />
-                    <li>
-                        <img src="https://farm5.staticflickr.com/4342/36338751244_316b6ee54b.jpg" alt="" />
-                    </li>
-                    <li>
-                        <img src="https://farm5.staticflickr.com/4343/37175099045_0d3a249629.jpg" alt="" />
-                    </li>
-                    <li>
-                        <img src="https://farm5.staticflickr.com/4425/36337012384_ba3365621e.jpg" alt="" />
-                    </li>
-                    {/* <!-- Not Found --> */}
-                    <li className="not-found">
-                        <h3>No Results Found</h3>
-                        <p>You search did not return any results. Please try again.</p>
-                    </li>
+                    {arrayOfItems}
                 </ul>
-            </div>
+            </div> 
         )
     }
+
+        // return (
+        //     <div className="photo-container">
+        //         <h2>'Click or Search for an Image'</h2>
+                    /* <!-- Not Found --> */
+                    /* <li className="not-found">
+                        <h3>No Results Found</h3>
+                        <p>You search did not return any results. Please try again.</p>
+                    </li> */
+            // </div>
+        // )
+    // }
 }
 
-export default Gallery
+export default withRouter(Gallery)

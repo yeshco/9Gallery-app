@@ -1,20 +1,31 @@
+// Importing React
 import React from 'react';
 
+// Importing Link from react-router
 import {Link} from 'react-router-dom'
 
+// The Nav Component
 function Nav() {
 
+    // Returning the JSX to render
+    // The Link Component sends you to the appropriate URL
     return (
         <nav className="main-nav">
             <ul>
                 <li>
-                    <Link to='/Cats'>Cats</Link>
+                    <Link to='cats'>Cats</Link>
                 </li>
                 <li>
-                    <Link to='/Dogs'>Dogs</Link>
+                    <Link to='dogs'>Dogs</Link>
                 </li>
                 <li>
-                    <Link to='/Computers'>Computers</Link>
+                    <Link to='computers'>Computers</Link>
+                </li>
+                <li>
+                    <Link to='birds'>Birds</Link>
+                </li>
+                <li>
+                    <Link to='desert'>Desert</Link>
                 </li>
             </ul>
         </nav>

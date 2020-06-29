@@ -25,13 +25,14 @@ a {
   margin: 0 auto 32px;
 }
 
-.search-form button {
+.search-button {
   outline: none;
   background-color: #438bbd;
   border: none;
   padding: 0px 15px;
   border-radius: 0 0.35em 0.35em 0;
   cursor: pointer;
+  height: 44px;
 }
 
 input {
